@@ -16,6 +16,7 @@ const LoginForm = ({setUser}) => {
       })
       console.log(user)
       setUser(user)
+      window.localStorage.setItem('loggedNoteAppUser', JSON.stringify(user))
       noteService.setToken(user.token)
       setUsername('')
       setPassword('')
