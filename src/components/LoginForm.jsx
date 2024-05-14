@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import loginService from '../services/login'
+import noteService from '../services/notes'
 
 const LoginForm = ({setUser}) => {
   const [username, setUsername] = useState('')
@@ -15,6 +16,7 @@ const LoginForm = ({setUser}) => {
       })
       console.log(user)
       setUser(user)
+      noteService.setToken(user.token)
       setUsername('')
       setPassword('')
     } catch (err) {
