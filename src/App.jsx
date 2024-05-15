@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import Note from './components/Note'
 import Notification from './components/Notification'
 import Footer from './components/Footer'
@@ -10,14 +10,13 @@ import loginService from './services/login'
 
 const App = () => {
   const [notes, setNotes] = useState([])
-  const [newNote, setNewNote] = useState('')
   const [showAll, setShowAll] = useState(true)
   const [errorMessage, setErrorMessage] = useState(null)
 
-  const [username, setUsername] = useState('')
-  const [password, setPassword] = useState('')
   const [user, setUser] = useState(null)
   const [loginVisible, setLoginVisible] = useState(false)
+
+  const noteFormRef = useRef()
 
   useEffect(() => {
     noteService
@@ -36,19 +35,14 @@ const App = () => {
     }
   }, [])
 
-  const handleLogin = async (event) => {
-    event.preventDefault()
+  const handleLogin = async (credentials) => {
     try {
-      const user = await loginService.login({
-        username, password,
-      })
+      const user = await loginService.login(credentials)
       noteService.setToken(user.token)
       window.localStorage.setItem(
         'loggedNoteappUser', JSON.stringify(user)
       )
       setUser(user)
-      setUsername('')
-      setPassword('')
     } catch (exception) {
       setErrorMessage('wrong credentials')
       setTimeout(() => {
@@ -57,23 +51,13 @@ const App = () => {
     }
   }
 
-  const addNote = (event) => {
-    event.preventDefault()
-    const noteObject = {
-      content: newNote,
-      important: Math.random() > 0.5,
-    }
-
+  const addNote = (noteObject) => {
+    noteFormRef.current.toggleVisibility()
     noteService
       .create(noteObject)
       .then(returnedNote => {
         setNotes(notes.concat(returnedNote))
-        setNewNote('')
       })
-  }
-
-  const handleNoteChange = (event) => {
-    setNewNote(event.target.value)
   }
 
   const notesToShow = showAll
@@ -107,18 +91,14 @@ const App = () => {
       {!user &&
         <Toggleable buttonLabel="log in">
           <LoginForm
-            username={username}
-            password={password}
-            handleUsernameChange={({ target }) => setUsername(target.value)}
-            handlePasswordChange={({ target }) => setPassword(target.value)}
-            handleSubmit={handleLogin}
+            handleLogin={handleLogin}
           />
         </Toggleable>
       }
       {user &&
         <div>
-          <p>{user.name} logged in</p>
-          <Toggleable buttonLabel="new note">
+          <p>{user.name || user.username} logged in</p>
+          <Toggleable buttonLabel="new note" ref={noteFormRef}>
             <NoteForm createNote={addNote} />
           </Toggleable>
         </div>
