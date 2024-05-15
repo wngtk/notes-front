@@ -4,7 +4,7 @@ import Notification from './components/Notification'
 import Footer from './components/Footer'
 import LoginForm from './components/LoginForm'
 import NoteForm from './components/NoteForm'
-import Toggleable from './components/Togglable'
+import Toggleable from './components/Toggleable'
 import noteService from './services/notes'
 import loginService from './services/login'
 
