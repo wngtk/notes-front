@@ -14,7 +14,6 @@ const App = () => {
   const [errorMessage, setErrorMessage] = useState(null)
 
   const [user, setUser] = useState(null)
-  const [loginVisible, setLoginVisible] = useState(false)
 
   const noteFormRef = useRef()
 
@@ -72,7 +71,7 @@ const App = () => {
       .update(id, changedNote).then(returnedNote => {
       setNotes(notes.map(note => note.id !== id ? note : returnedNote))
     })
-      .catch(error => {
+      .catch(_ => {
         setErrorMessage(
           `Note '${note.content}' was already removed from server`
         )
